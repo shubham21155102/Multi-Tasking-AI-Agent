@@ -1,0 +1,31 @@
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies including ffmpeg
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements file
+COPY fast-api-backend/requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the backend code
+COPY fast-api-backend/ .
+
+# Create directories for uploads, chunks, and outputs
+RUN mkdir -p /app/uploads /app/chunks /app/outputs
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+
+# Expose port
+EXPOSE 8000
+
+# Command to run the application
+CMD ["python", "app.py"]

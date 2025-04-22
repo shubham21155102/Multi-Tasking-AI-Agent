@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./uploads:/app/uploads
+      - backend_chunks:/app/chunks
+      - backend_outputs:/app/outputs
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - ALIBABA_APP_KEY=${ALIBABA_APP_KEY}
+      - ALIBABA_TOKEN=${ALIBABA_TOKEN}
+      - ALIBABA_ENDPOINT=${ALIBABA_ENDPOINT}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  backend_chunks:
+  backend_outputs:

@@ -5,6 +5,9 @@ const groq = new Groq({
   dangerouslyAllowBrowser:true
 });
 
+// Get API URL from environment variable or fallback to localhost
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 export async function transcribeAudio(audioData: ArrayBuffer, fileName: string): Promise<{ transcription: string, usedFallback?: boolean }> {
   // Convert ArrayBuffer to a Blob file with proper MIME type
   const fileExtension = fileName.split('.').pop()?.toLowerCase() || 'mp3';
@@ -20,8 +23,8 @@ export async function transcribeAudio(audioData: ArrayBuffer, fileName: string):
   formData.append('audio', audioFile);
   
   try {
-    // Send to our backend which will use Alibaba Cloud ASR API
-    const response = await fetch('http://localhost:8000/api/transcribe', {
+    // Send to our backend using the API_URL from environment
+    const response = await fetch(`${API_URL}/api/transcribe`, {
       method: 'POST',
       body: formData,
     });
